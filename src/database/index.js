@@ -22,8 +22,28 @@ const getUsers = () => {
 };
 
 const getListOfAgesOfUsersWith = (item) => {
+  
     const dataAccessMethod = () => {
-        // fill me in :)
+        let ageToCount = {};
+        
+        // Get all usernames that contains the matching item
+        let usernames = _.keys(db.itemsOfUserByUsername).filter((username) => {
+            return db.itemsOfUserByUsername[username].includes(item);
+        });
+      
+        // Get age for each username
+        usernames.forEach((username) => {
+            let user = _.find(db.usersById, (user) => {
+                return user.username === username
+            })
+
+            if (user) {
+                // If found add to list and increment count
+                ageToCount[user.age] = ageToCount[user.age] ? ++ageToCount[user.age] : 1
+            }
+        });
+
+        return ageToCount;
     }
     return mockDBCall(dataAccessMethod);
 }

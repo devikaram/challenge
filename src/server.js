@@ -6,6 +6,9 @@ const registerRoutes = require('./routes');
 // server config
 const port = process.env.PORT || 3000;
 
+// Expose public directory with static resources
+app.use(express.static('public'));
+
 // register routes
 registerRoutes(app);
 
