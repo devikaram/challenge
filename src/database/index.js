@@ -21,11 +21,16 @@ const getUsers = () => {
     return mockDBCall(dataAccessMethod);
 };
 
+const getItems = () => {
+    const dataAccessMethod = () => _.union(_.flatten(_.values(db.itemsOfUserByUsername)))
+    return mockDBCall(dataAccessMethod);
+}
+
 const getListOfAgesOfUsersWith = (item) => {
   
     const dataAccessMethod = () => {
         let ageToCount = {};
-        
+
         // Get all usernames that contains the matching item
         let usernames = _.keys(db.itemsOfUserByUsername).filter((username) => {
             return db.itemsOfUserByUsername[username].includes(item);
@@ -43,12 +48,13 @@ const getListOfAgesOfUsersWith = (item) => {
             }
         });
 
-        return ageToCount;
+        return _.toPairs(ageToCount);
     }
     return mockDBCall(dataAccessMethod);
 }
 
 module.exports = {
     getUsers,
+    getItems,
     getListOfAgesOfUsersWith
 };

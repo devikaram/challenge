@@ -1,14 +1,150 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/favicon.png">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/favicon.png">
+        <title>Walmex Challenge</title>
 
-    <title>Walmex Challenge</title>
-</head>
-<body>
-    Fill me in :)
-</body>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+        <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js" crossorigin></script>
+
+        <style>
+            .space {
+                margin-top : 50px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="users" class="space"> Loading... </div>
+        <div id="items" class="space"> Loading... </div>
+        <div id="ageCount"> Loading... </div>
+        
+        <script type="text/babel">
+            setTimeout(init, 1000);
+
+            function init() {
+               
+                fetch("/users")
+                    .then(res => res.json())
+                    .then(
+                        result => {
+                            const element = <div className="container">
+                                                <Users data={result}></Users>
+                                            </div>;
+                            ReactDOM.render(element, document.getElementById('users'));
+                        },
+                        error => {
+                           // handle error
+                        }
+                    );
+
+                fetch("/items")
+                    .then(res => res.json())
+                    .then(
+                        result => {
+                            const element = <div className="container">
+                                                <Items data={result}></Items>
+                                            </div>;
+                            ReactDOM.render(element, document.getElementById('items'));
+                            // Select first item by default
+                            displayAgeCount(result[0]);
+                        },
+                        error => {
+                           // handle error
+                        }
+                    );
+
+            }
+
+            function handleItemSelect(event) {
+                let item = event.target.value;
+                displayAgeCount(item);
+            }
+
+            function displayAgeCount(item) {
+                fetch("/users/age/" + item)
+                    .then(res => res.json())
+                    .then(
+                        result => {
+                            const element = <div className="container">
+                                                <AgeCount data={result}></AgeCount>
+                                            </div>;
+                            ReactDOM.render(element, document.getElementById('ageCount'));
+                        },
+                        error => {
+                            alert(error)
+                           // handle error
+                        }
+                    );
+            }
+
+            function Items(props) {
+                return (<div className="space">
+                            <h2>Age Demographic of Users With </h2>
+                            <p>
+                                <select className="form-select" onChange={handleItemSelect}>
+                                    {
+                                        props.data.map((item => {
+                                            return (<option value={item}>{item}</option>);
+                                        }))
+                                    }
+                                </select>
+                            </p>
+                        </div>);
+            }
+
+            function Users(props) {
+                return (<div>
+                            <h2>All Users</h2>
+                            <p> All Users and their Age </p>
+                            <table className="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Age</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    { props.data.map((user) => {
+                                            return (<tr>
+                                                <td>{user.username}</td>
+                                                <td>{user.age}</td>
+                                            </tr>)
+                                        })
+                                    }
+                                </tbody>
+                            </table>
+                        </div>);
+            }
+
+            function AgeCount(props) {
+                return (<div>
+                            <table className="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Age</th>
+                                        <th scope="col">Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    { props.data.map((item) => {
+                                            return (<tr>
+                                                <td>{item[0]}</td>
+                                                <td>{item[1]}</td>
+                                            </tr>)
+                                        })
+                                    }
+                                </tbody>
+                            </table>
+                        </div>);
+            }
+        </script>
+    </body>
 </html>
 

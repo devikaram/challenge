@@ -12,6 +12,11 @@ app.use(express.static('public'));
 // register routes
 registerRoutes(app);
 
+// Redirect to home page by default
+app.get('/', (req, res) => {
+    res.redirect('/index.html');
+});
+
 // create server start method
 const start = () => {
     return new Promise((resolve, reject) => {
